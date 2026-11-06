@@ -28,7 +28,7 @@ login.
 
 The program:
 
-1. Reads the keyring password from standard input.
+1. Prompts for a hidden password in an interactive terminal, or reads from standard input when piped.
 2. Locates the GNOME Keyring control socket using `GNOME_KEYRING_CONTROL`, or
    falls back to `$XDG_RUNTIME_DIR/keyring/control`.
 3. Connects to the already-running per-user GNOME Keyring daemon.
@@ -39,7 +39,7 @@ The program:
 It does **not** start another GNOME Keyring daemon and does not invoke
 `gnome-keyring-daemon --unlock`.
 
-The utility has no third-party Rust dependencies.
+The utility uses `rpassword` for hidden terminal input.
 
 ## Requirements
 
@@ -104,15 +104,13 @@ Adjust the destination if `$HOME/sbin` is not appropriate on your system.
 
 ## Basic use
 
-The utility reads the password from standard input.
+Run `gnome-keyring-unlock` directly in a terminal to receive a hidden password prompt. Press Enter to unlock. Piped standard input remains supported (the stream must reach EOF). On success, the utility prints `Unlocked`.
 
 > [!WARNING]
 > **NEVER PUT YOUR GNOME KEYRING PASSWORD OR SSH PASSPHRASE DIRECTLY IN A COMMAND, SCRIPT, DESKTOP FILE OR GIT REPOSITORY.**
 > Enter secrets only through a trusted interactive prompt.
 
-It is intended to be called by a trusted interactive helper which obtains the
-password from the user and supplies it to `gnome-keyring-unlock` through
-standard input.
+A trusted interactive helper may also supply the password through standard input.
 
 ## Automatic login and a single passphrase prompt
 

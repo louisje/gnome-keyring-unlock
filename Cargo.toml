@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "Unlock an existing GNOME login keyring through the keyring daemon control socket"
 license = "MIT"
-repository = "https://github.com/arnieSkyNet/gnome-keyring-unlock"
+repository = "https://github.com/louisje/gnome-keyring-unlock"
 
 [dependencies]
+rpassword = "7"

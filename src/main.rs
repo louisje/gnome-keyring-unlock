@@ -1,5 +1,5 @@
 use std::env;
-use std::io::{self, Read, Write};
+use std::io::{self, IsTerminal, Read, Write};
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
 
@@ -32,8 +32,13 @@ fn build_unlock_packet(password: &[u8]) -> Result<Vec<u8>, &'static str> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut password = String::new();
-    io::stdin().read_to_string(&mut password)?;
+    let mut password = if io::stdin().is_terminal() {
+        rpassword::prompt_password("Keyring password: ")?
+    } else {
+        let mut input = String::new();
+        io::stdin().read_to_string(&mut input)?;
+        input
+    };
 
     while password.ends_with('\n') || password.ends_with('\r') {
         password.pop();
@@ -93,7 +98,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     match result {
-        0 => Ok(()),
+        0 => {
+            println!("Unlocked");
+            Ok(())
+        }
         1 => Err("GNOME Keyring rejected the password".into()),
         2 => Err("GNOME Keyring operation failed".into()),
         3 => Err("GNOME Keyring daemon is unavailable".into()),
