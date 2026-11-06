@@ -31,7 +31,43 @@ fn build_unlock_packet(password: &[u8]) -> Result<Vec<u8>, &'static str> {
     Ok(packet)
 }
 
+const HELP: &str = "\
+Unlock an existing GNOME login keyring using the running daemon.
+
+Usage:
+  gnome-keyring-unlock [--help]
+
+Options:
+  -h, --help    Show this help and exit
+
+Input:
+  Terminal     Prompt for a password without echoing it; press Enter to submit.
+  Pipe         Read password from standard input until EOF.
+
+Environment:
+  GNOME_KEYRING_CONTROL  Directory containing the daemon control socket.
+  XDG_RUNTIME_DIR        Used for keyring/control when the above is unset.
+
+The daemon must already be running. This command does not start it.
+Never supply passwords as command-line arguments.
+";
+
+fn parse_args(args: impl IntoIterator<Item = String>) -> Result<bool, String> {
+    let mut help = false;
+    for arg in args {
+        match arg.as_str() {
+            "-h" | "--help" => help = true,
+            _ => return Err(format!("unknown argument: {arg} (try --help)")),
+        }
+    }
+    Ok(help)
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    if parse_args(env::args().skip(1))? {
+        print!("{HELP}");
+        return Ok(());
+    }
     let mut password = if io::stdin().is_terminal() {
         rpassword::prompt_password("Keyring password: ")?
     } else {
@@ -112,6 +148,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn help_flag_is_accepted() {
+        assert!(parse_args(["--help".into()]).unwrap());
+        assert!(parse_args(["-h".into()]).unwrap());
+        assert!(!parse_args(Vec::<String>::new()).unwrap());
+    }
+
+    #[test]
+    fn unknown_arguments_are_rejected() {
+        assert!(parse_args(["--bad".into()]).is_err());
+    }
 
     fn read_u32(bytes: &[u8]) -> u32 {
         u32::from_be_bytes(bytes.try_into().unwrap())

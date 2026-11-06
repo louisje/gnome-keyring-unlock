@@ -112,6 +112,9 @@ Adjust the destination if `$HOME/sbin` is not appropriate on your system.
 
 ## Basic use
 
+Run `gnome-keyring-unlock --help` for usage, input modes, and environment variables.
+
+
 Run `gnome-keyring-unlock` directly in a terminal to receive a hidden password prompt. Press Enter to unlock. Piped standard input remains supported (the stream must reach EOF). On success, the utility prints `Unlocked`.
 
 > [!WARNING]
