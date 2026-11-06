@@ -48,6 +48,14 @@ The utility uses `rpassword` for hidden terminal input.
 - An already-running `gnome-keyring-daemon`
 - Rust toolchain when building from source
 
+## Nightly builds
+
+Each push to `main` (or manual workflow dispatch) builds and tests native Linux
+binaries for **x86_64** and **aarch64**. Successful builds are published as
+numbered **nightly pre-releases** on the
+[Releases page](https://github.com/louisje/gnome-keyring-unlock/releases),
+with SHA-256 checksums. These are development builds, not stable releases.
+
 ## Download
 
 For most users, the easiest installation method is to download a
